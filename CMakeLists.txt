@@ -17,10 +17,10 @@ set(libuvc_VERSION_PATCH 5)
 set(libuvc_VERSION ${libuvc_VERSION_MAJOR}.${libuvc_VERSION_MINOR}.${libuvc_VERSION_PATCH})
 
 find_library(LIBUSB_LIBRARY_NAMES usb-1.0
-	PATHS /opt/local/lib)
+	PATHS "3rd/libusb-1.0.26-binaries/VS2015-x64/lib")
 
 find_path(LIBUSB_INCLUDE_DIR libusb-1.0/libusb.h
-	PATHS /opt/local/include)
+	PATHS "3rd/")
 
 # Try to find JPEG using a module or pkg-config. If that doesn't work, search for the header.
 find_package(jpeg QUIET)
@@ -45,6 +45,7 @@ include_directories(
   ${libuvc_SOURCE_DIR}/include
   ${libuvc_BINARY_DIR}/include
   ${LIBUSB_INCLUDE_DIR}
+  "3rd/pthreads-w32-2-9-1-release/Pre-built.2/include"
 )
 
 if(JPEG_FOUND)
