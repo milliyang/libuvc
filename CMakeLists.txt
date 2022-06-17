@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0.0)
 project(libuvc)
 
 if (NOT CMAKE_BUILD_TYPE)
@@ -7,8 +7,8 @@ if (NOT CMAKE_BUILD_TYPE)
 endif ()
 
 if (NOT CMAKE_BUILD_TARGET)
-  message(STATUS "No target type selected, default to shared library")
-  set(CMAKE_BUILD_TARGET "Shared" CACHE STRING "" FORCE)
+  message(STATUS "No target type selected, default to Static library")
+  set(CMAKE_BUILD_TARGET "Static" CACHE STRING "" FORCE)
 endif()
 
 set(libuvc_VERSION_MAJOR 0)
@@ -16,23 +16,21 @@ set(libuvc_VERSION_MINOR 0)
 set(libuvc_VERSION_PATCH 5)
 set(libuvc_VERSION ${libuvc_VERSION_MAJOR}.${libuvc_VERSION_MINOR}.${libuvc_VERSION_PATCH})
 
-find_library(LIBUSB_LIBRARY_NAMES usb-1.0
-	PATHS "3rd/libusb-1.0.26-binaries/VS2015-x64/lib")
 
-find_path(LIBUSB_INCLUDE_DIR libusb-1.0/libusb.h
-	PATHS "3rd/")
+find_library(LIBUSB_LIBRARY_NAMES libusb-1.0 PATHS "3rd/libusb-1.0.26-binaries/VS2015-x64/lib")
+find_path(LIBUSB_INCLUDE_DIR libusb-1.0/libusb.h PATHS "3rd")
+find_library(JPEG_LIBRARIES jpeg PATHS "3rd/libjpeg/jpeg-9c/Lib/static_x64")
+find_library(PTHREAD_LIBRARIES pthreadVC2 PATHS "3rd/pthreads-w32-2-9-1-release/Pre-built.2/lib/x64")
 
-# Try to find JPEG using a module or pkg-config. If that doesn't work, search for the header.
-find_package(jpeg QUIET)
-if(NOT JPEG_FOUND)
-  find_path(JPEG_INCLUDE_DIR jpeglib.h)
-  if(JPEG_INCLUDE_DIR)
-    set(JPEG_FOUND ON)
-    set(JPEG_LIBRARIES -ljpeg)
-  endif()
-endif()
+set(JPEG_INCLUDE_DIR "3rd/libjpeg/jpeg-9c/Include")
+include_directories("3rd/libjpeg/jpeg-9c/Include")
+# find_path(JPEG_INCLUDE_DIR jpeglib.h)
 
-SET(CMAKE_C_FLAGS_DEBUG "-g -DUVC_DEBUGGING")
+set(JPEG_FOUND ON)
+# set(JPEG_LIBRARIES -ljpeg)
+
+# SET(CMAKE_C_FLAGS_DEBUG "-g -DUVC_DEBUGGING")
+SET(CMAKE_C_FLAGS_DEBUG "-g")
 
 SET(INSTALL_CMAKE_DIR "${CMAKE_INSTALL_PREFIX}/lib/cmake/libuvc" CACHE PATH
 	"Installation directory for CMake files")
@@ -75,7 +73,7 @@ if(JPEG_FOUND)
   target_link_libraries (uvc ${JPEG_LIBRARIES})
 endif(JPEG_FOUND)
 
-target_link_libraries(uvc ${LIBUSB_LIBRARY_NAMES})
+target_link_libraries(uvc ${PTHREAD_LIBRARIES} ${LIBUSB_LIBRARY_NAMES})
 
 #add_executable(test src/test.c)
 #target_link_libraries(test uvc ${LIBUSB_LIBRARY_NAMES} opencv_highgui
